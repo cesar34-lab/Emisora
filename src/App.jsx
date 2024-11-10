@@ -3,7 +3,6 @@ import Button from './Button';
 import Login from './Login';
 import Modal from 'react-modal';
 import styled from 'styled-components';
-import Pattern from './Pattern';
 
 Modal.setAppElement('#root'); // Cambia '#root' al id de tu contenedor principal si es diferente
 
