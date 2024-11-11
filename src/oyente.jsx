@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 const Oyente = () => {
+  const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
   };
   return (
     <StyledWrapper>
-      <button className="button buscar">
+      <button className="button buscar" onClick={()=>navigate('/buscar')}>
         <div className="blob1" />
         <div className="blob2" />
         <div className="inner">BUSCAR</div>
