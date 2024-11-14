@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState,useMemo } from "react";
 import styled from "styled-components";
+import Checkbox from "./checkbox";
 
 const Buscar = () => {
   const data = [
@@ -10,23 +11,39 @@ const Buscar = () => {
     "Node.js",
     "Express",
     "MongoDB",
-  ];
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState(data);
-
-  // Función para manejar el cambio en el input de búsqueda
-  const handleSearchChange = (event) => {
-    const value = event.target.value;
-    setSearchTerm(value);
-
-    // Filtramos los datos según el término de búsqueda
-    const filtered = data.filter((item) =>
-      item.toLowerCase().includes(value.toLowerCase())
+  ]; // Filtra los datos basándose en el término de búsqueda
+  const filteredData = useMemo(() => {
+    return data.filter((item) =>
+      item.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    setFilteredData(filtered);
+  }, [searchTerm, data]);
+
+  // Actualiza el término de búsqueda
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
   };
 
-  return (
+  const handleCheckboxChange = (item) => {
+    setSelectedItems((prevSelected) => {
+      if (prevSelected.includes(item)) {
+        return prevSelected;
+      } else {
+        const updatedSelection = [...prevSelected, item];
+
+        setVotes((prevVotes) => {
+          const newVotes = { ...prevVotes };
+          updatedSelection.forEach((selectedItem) => {
+            newVotes[selectedItem] = (newVotes[selectedItem] || 0) + 1;
+          });
+          return newVotes;
+        });
+
+        return updatedSelection;
+      }
+    });
+  };
+  
+  return (  
     <StyledWrapper>
       <div>
         <div className="galaxy" />
@@ -92,13 +109,12 @@ const Buscar = () => {
             </div>
           </div>
         </div>
-
-        {/* Mostrar los resultados de la búsqueda */}
         <div id="results-container">
           {filteredData.length > 0 ? (
             filteredData.map((item, index) => (
               <div key={index} className="result-item">
-                {item}
+                <Checkbox onClick={() => handleCheckboxChange(item)} />
+                {item} - Votos: {votes[item] || 0}
               </div>
             ))
           ) : (
@@ -421,37 +437,49 @@ const StyledWrapper = styled.div`
     position: absolute;
     left: 20px;
     top: 15px;
-  }
+  }  
   #results-container {
     display: flex;
-    flex-direction: column;
+    justify-content:center; 
     padding: 16px;
   }
-
-  .result-item {
-    margin: 8px 0;
+.checkbox {
+    margin-left: auto; /* Esto empuja el checkbox (corazón) al lado derecho */
+    cursor: pointer;
+    }
+  
+    .result-item {
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+flex-direction:center;
+    margin: 8px 0;  
     color: #7bee13;
     font-size: 16px;
-    padding: 10px;
-    background-color: rgba(10, 110, 30, 0.6);
+    padding: 10px; 
+    background-color: rgba( 0,0,0, 0.8);
     border-radius: 10vw;
     border: 1px solid #fc00cc;
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.7); /* Sombra para dar profundidad */
     transition: all 0.3s ease;
+    width:20vw;
+
   }
+    result-item span{
+    margin-right:10px}
 
   .result-item:hover {
     background-color: rgba(0, 0, 0, 1);
     box-shadow: 0 15px 19px rgba(107, 160, 221, 1); /* Efecto más fuerte al pasar el mouse */
-    transform: scale(1.15); /* Agrandar ligeramente al pasar el mouse */
+    transform: scale(1.09); /* Agrandar ligeramente al pasar el mouse */
   }
     #results-container > div {
   color: #a9c7ff; /* Color azul frío para los resultados */
   font-size: 18px;
   font-weight: bold;
   text-align: center;
-  margin-top: 20px;
-  animation: neonBluePulse 1.5s ease-in-out infinite; /* Animación pulsante */
+  margin-top: 20px; 
+  animation: neonBluePulse 0.5s ease-in-out infinite; /* Animación pulsante */
   text-shadow: 0 0 5px #80b3ff, 0 0 10px #80b3ff, 0 0 15px #66aaff, 0 0 20px #66aaff, 0 0 25px #4d99ff, 0 0 30px #4d99ff, 0 0 35px #3399ff; /* Efecto neón en tonos azules fríos */
 }
 
@@ -502,6 +530,70 @@ const StyledWrapper = styled.div`
     opacity: 1;
   }
 }
-`;
+  .button-container {
+  position: fixed; /* Fija el botón en la parte inferior */
+  bottom: 20px; /* Espacio desde la parte inferior de la pantalla */
+  left: 50%; /* Centra el botón horizontalmente */
+  transform: translateX(-50%); /* Ajuste para asegurar que el botón esté perfectamente centrado */
+  z-index: 1000; /* Asegura que el botón quede por encima de otros elementos */
+} 
+.button {
+    height: 50px;
+    width: 150px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s ease-in-out;
+  }
+
+  .button:hover {
+    box-shadow: .5px .5px 150px #252525;
+  }
+
+  .type1::after {
+    content: "THANKS";
+    height: 50px;
+    width: 150px;
+    background-color: #008080;
+    color: #fff;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    transform: translateY(50px);
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s ease-in-out;
+  }
+
+  .type1::before {
+    content: "VOTE";
+    height: 50px;
+    width: 150px;
+    background-color: #fff;
+    color: #008080;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    transform: translateY(0px) scale(1.2);
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s ease-in-out;
+  }
+
+  .type1:hover::after {
+    transform: translateY(0) scale(1.2);
+  }
+
+  .type1:hover::before {
+    transform: translateY(-50px) scale(0) rotate(120deg);
+  }`;
 
 export default Buscar;
