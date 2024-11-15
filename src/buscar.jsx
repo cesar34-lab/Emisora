@@ -1,8 +1,11 @@
-import React, { useState,useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import styled from "styled-components";
 import Checkbox from "./checkbox";
 
 const Buscar = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [votes, setVotes] = useState({});
   const data = [
     "React",
     "JavaScript",
@@ -32,9 +35,7 @@ const Buscar = () => {
 
         setVotes((prevVotes) => {
           const newVotes = { ...prevVotes };
-          updatedSelection.forEach((selectedItem) => {
-            newVotes[selectedItem] = (newVotes[selectedItem] || 0) + 1;
-          });
+          newVotes[item] = (newVotes[item] || 0) + 1;
           return newVotes;
         });
 
@@ -42,8 +43,8 @@ const Buscar = () => {
       }
     });
   };
-  
-  return (  
+
+  return (
     <StyledWrapper>
       <div>
         <div className="galaxy" />
